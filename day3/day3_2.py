@@ -22,7 +22,7 @@ def multiply_and_sum_instructions(instructions: list[str]) -> int:
 
 
 def remove_text_between_dont_and_do(line: str) -> str:
-    return re.sub(r"don't\(\)(.*?)do\(\)", "[REPLACED]", line)
+    return re.sub(r"don't\(\)(.*?)(?:do\(\)|$)", "[REPLACED]", line)
 
 
 if __name__ == "__main__":
