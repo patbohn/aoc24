@@ -6,8 +6,8 @@ import re
 def main(input_file: Path):
     print("Hello from day3!")
     with open(input_file, "r") as f:
-        input = "".join([line.replace("\n", "") for line in f.readlines()])
-    line = remove_text_between_do_and_dont(input)
+        input = f.read().replace("\n", "")
+    line = remove_text_between_dont_and_do(input)
     instructions = find_good_instructions(line)
     result = multiply_and_sum_instructions(instructions)
     print(f"Result: {result}")
@@ -21,8 +21,8 @@ def multiply_and_sum_instructions(instructions: list[str]) -> int:
     return sum(int(inst[0]) * int(inst[1]) for inst in instructions)
 
 
-def remove_text_between_do_and_dont(line: str) -> str:
-    return re.sub(r"don't\(\)(.*?)do\(\)", lambda x: "-" * (x.end() - x.start()), line)
+def remove_text_between_dont_and_do(line: str) -> str:
+    return re.sub(r"don't\(\)(.*?)do\(\)", "[REPLACED]", line)
 
 
 if __name__ == "__main__":
