@@ -10,7 +10,7 @@ import numpy as np
 import re
 
 
-def main(input_file: str):
+def main(input_file: Path):
     print("Hello from day1!")
     regex = re.compile(r"(\d+)\s*(\d+)")
     arr1 = []
