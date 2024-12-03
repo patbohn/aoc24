@@ -14,15 +14,11 @@ def main(input_file: Path):
 
 
 def find_good_instructions(line: str) -> list[str]:
-    print(line)
     return re.findall(r"mul\((\d{1,3}),(\d{1,3})\)", line)
 
 
 def multiply_and_sum_instructions(instructions: list[str]) -> int:
-    result = 0
-    for instruction in instructions:
-        result += int(instruction[0]) * int(instruction[1])
-    return result
+    return sum(int(inst[0]) * int(inst[1]) for inst in instructions)
 
 
 def remove_text_between_do_and_dont(line: str) -> str:
