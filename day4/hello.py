@@ -46,15 +46,15 @@ class Position():
         return None
 
 
-def find_x(matrix: list[list[str]]) -> list[Position]:
+def find_letter(matrix: list[list[str]], search_letter: str="X") -> list[Position]:
     positions = []
     for row, rows in enumerate(matrix):
         for col, letter in enumerate(rows):
-            if letter == "X":
+            if letter == search_letter:
                 positions.append(Position(matrix, row, col))
     return positions
 
-def transverse_positions(position: Position, word: str = "XMAS") -> int:
+def find_string(position: Position, word: str = "XMAS") -> int:
     start_position = position.row, position.col
     count = 0
     for direction in directions:
@@ -71,19 +71,66 @@ def transverse_positions(position: Position, word: str = "XMAS") -> int:
             count += 1
         position.row, position.col = start_position
     return count
-            
+
+def check_direction(direction: Direction, position: Position, word: str = "MAS"):
+    start_position = position.row, position.col
+    if word[0] != position.current_letter:
+        position.row, position.col = start_position
+        return False
+    for letter in word[1:]:
+        if current_letter := position.move(direction):
+            if current_letter == letter:
+                pass
+            else:
+                break
+        else:
+            break
+    else:
+        position.row, position.col = start_position
+        return True
+    position.row, position.col = start_position
+    return False
+
+def check_direction_both_ways(direction: Direction, position: Position, word: str = "MAS") -> bool:
+    return check_direction(direction, position, word) or check_direction(direction, position, word[::-1])
+
+def find_crosses(position: Position, word: str = "MAS") -> int:
+    start_position = position.row, position.col
+    # check diagonal fw
+    crosses = 0
+    if position.move("NW"):
+        if check_direction_both_ways("SE", position):
+            position.row, position.col = start_position
+            if position.move("NE"):
+                if check_direction_both_ways("SW", position):
+                    crosses += 1
+    # position.row, position.col = start_position
+    # if position.move("N"):
+    #     if check_direction_both_ways("S", position):
+    #         position.row, position.col = start_position
+    #         if position.move("W"):
+    #             if check_direction_both_ways("E", position):
+    #                 crosses += 1
+    return crosses
+
 
 def part1(input: Path) -> int:
     with open(input, "r") as f:
         input = f.read()
     matrix = read_into_2d_list(input)
     matches_found = 0
-    for x in find_x(matrix):
-        matches_found += transverse_positions(x)
-    print(f"Total matches found: ", matches_found)
+    for x in find_letter(matrix):
+        matches_found += find_string(x)
+    return matches_found
 
 def part2(input: Path) -> int:
-    ...
+    with open(input, "r") as f:
+        input = f.read()
+    matrix = read_into_2d_list(input)
+    matches_found = 0
+    for a in find_letter(matrix, search_letter="A"):
+        matches_found += find_crosses(a)
+    return matches_found
 
 def read_into_2d_list(input: str) -> list[list[str]]:
     return [list(line) for line in input.split("\n")]
