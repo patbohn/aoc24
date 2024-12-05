@@ -1,11 +1,86 @@
 import argparse
 from pathlib import Path
+from enum import Enum
+
+
+class Direction(Enum):
+    N=1
+    NE=2
+    E=3
+    SE=4
+    S=5
+    SW=6
+    W=7
+    NW=8
+
+directions = [dir.__repr__() for dir in Direction]
+
+class Position():
+    row: int
+    col: int
+    matrix: list[list[int]]
+
+    def __init__(self, matrix: list[list[int]], row: int, col: int):
+        self.row = row
+        self.col = col
+        self.matrix = matrix
+
+    def move(self, compounded_direction: Direction) -> str | None:
+        for direction in compounded_direction:
+            match direction:
+                case "N":
+                    self.row -= 1
+                case "E":
+                    self.col += 1
+                case "S":
+                    self.row += 1
+                case "W":
+                    self.col -= 1
+        return self.current_letter
+    
+    @property
+    def current_letter(self):
+        if len(self.matrix) > self.row >= 0:
+            if len(self.matrix[0]) > self.col >= 0:
+                return self.matrix[self.row][self.col]
+        return None
+
+
+def find_x(matrix: list[list[str]]) -> list[Position]:
+    positions = []
+    for row, rows in enumerate(matrix):
+        for col, letter in enumerate(rows):
+            if letter == "X":
+                positions.append(Position(matrix, row, col))
+    return positions
+
+def transverse_positions(position: Position, word: str = "XMAS") -> int:
+    start_position = position.row, position.col
+    count = 0
+    for direction in directions:
+        for letter in list(word)[1:]:
+            if matrix_letter := position.move(direction):
+                if letter == matrix_letter: 
+                    pass
+                else:
+                    break
+            else:
+                break
+        # exit loop without breaking means match found
+        else:
+            count += 1
+        position.row, position.col = start_position
+    return count
+            
 
 def part1(input: Path) -> int:
     with open(input, "r") as f:
         input = f.read()
     matrix = read_into_2d_list(input)
-    
+    matches_found = 0
+    for x in find_x(matrix):
+        matches_found += transverse_positions(x)
+    print(f"Total matches found: ", matches_found)
 
 def part2(input: Path) -> int:
     ...
@@ -13,33 +88,7 @@ def part2(input: Path) -> int:
 def read_into_2d_list(input: str) -> list[list[str]]:
     return [list(line) for line in input.split("\n")]
 
-def find_letter_at_dist(matrix: list[list[str]], letter: str, row: int, col: int, dist: int) -> int:
-    found_positions = []
-    if matrix[row-dist][col] == letter:
-        found_positions.append((row-dist, col))
-    if matrix[row+dist][col] == letter:
-        found_positions.append((row+dist, col))
-    if matrix[row][col-dist] == letter:
-        found_positions.append((row, col-dist))
-    if matrix[row][col+dist] == letter:
-        found_positions.append((row, col+dist))
-    if matrix[row-dist][col-dist] == letter:
-        found_positions.append((row-dist, col-dist))
-    if matrix[row-dist][col+dist] == letter:
-        found_positions.append((row-dist, col+dist))
-    if matrix[row+dist][col-dist] == letter:
-        found_positions.append((row+dist, col-dist))
-    if matrix[row+dist][col+dist] == letter:
-        found_positions.append((row+dist, col+dist))
-    return found_positions
 
-def scan_for_word(matrix: list[list[str]], row: int, col: int, word: str = "XMAS") -> int:
-    if row < 0 or col < 0 or row >= len(matrix) or col >= len(matrix[0]):
-        return 0
-    if matrix[row][col] != word[0]:
-        return 0
-    for i in range(1, len(word)):
-        
 
 if __name__ == "__main__":
     print("Hello from day4!")
